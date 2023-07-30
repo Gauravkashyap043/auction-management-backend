@@ -9,7 +9,6 @@ import { UserLoginServices, UserLogoutServices, UserRegisterService } from "../s
 export const userRegister = async (req: Request, res: Response) => {
   const params = {
     fullName: req.body.fullName,
-    orgName: req.body.orgName,
     mobileNumber: req.body.mobileNumber,
     password: Helper.hashPassword(req.body.password),
     userType: "ROOT",
