@@ -10,7 +10,6 @@ export const requestValidationConfig = {
     body("password", "Password should be minimum 6 characters.")
       .exists()
       .isLength({ min: 6 }),
-    body("orgName").exists(),
   ],
   userLogin: [
     body("mobileNumber", "Enter a valid mobile number").isLength({

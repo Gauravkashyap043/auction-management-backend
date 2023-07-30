@@ -1,5 +1,5 @@
 export enum IDatabaseSchema {
-  AUCTION_DATA = "auctionData",
-  PRODUCT_DATA = "productData"
+  USER_DATA = "userData",
+  AUCTION_DATA = "auctionData"
 
 }

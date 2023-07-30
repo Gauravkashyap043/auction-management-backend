@@ -11,7 +11,6 @@ export const userRegister = async (req: Request, res: Response) => {
     fullName: req.body.fullName,
     mobileNumber: req.body.mobileNumber,
     password: Helper.hashPassword(req.body.password),
-    userType: "ROOT",
   };
   try {
     UserRegisterService(params, (result: boolean) => {

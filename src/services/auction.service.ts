@@ -64,3 +64,30 @@ export const placeBidService = async (
     callBack(false, error);
   }
 };
+
+
+export const getAllAuctionsService = async (): Promise<Auction[]> => {
+  try {
+    const allAuctions = await AuctionModel.find()
+    .populate("registerBy", "-password") // Populate the registerBy field and exclude the password field
+    .populate("bids.bidder", "-password") // Populate the bidder field in the bids array and exclude the password field
+    .exec();
+
+    return allAuctions;
+  } catch (error) {
+    throw new Error("Failed to fetch all auctions");
+  }
+};
+
+export const getAllAuctionsByRegister = async (registerById: string): Promise<Auction[]> => {
+  try {
+    const allAuctions = await AuctionModel.find({ registerBy: registerById })
+      .populate("registerBy", "-password") // Populate the registerBy field and exclude the password field
+      .populate("bids.bidder", "-password") // Populate the bidder field in the bids array and exclude the password field
+      .exec();
+
+    return allAuctions;
+  } catch (error) {
+    throw new Error("Failed to fetch auctions by registerBy");
+  }
+};

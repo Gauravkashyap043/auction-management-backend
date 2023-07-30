@@ -12,12 +12,8 @@ app.use(express.urlencoded());
 app.use(dbConnectionMiddleware);
 app.use(router);
 
-// app.get("/", (req, res) => {
-//   res.send("What's up my");
-// });
-
 app.listen(process.env.BACK_PORT, () => {
   console.log(
-    `server running : https://${process.env.BACK_HOST}:${process.env.BACK_PORT}`
+    `⚡⚡⚡ server running : http://localhost:${process.env.BACK_PORT}`
   );
 });

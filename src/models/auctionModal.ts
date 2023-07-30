@@ -7,7 +7,7 @@ export interface Auction {
   details: string;
   startingBidPrice: number;
   auctionDuration: number; // in hours
-  productImages: string[]; // array to store multiple image URLs
+  productImage: string; // array to store multiple image URLs
   registerBy: ObjectId; // reference to the user who registered the auction
   bids: {
     bidder: ObjectId; // reference to the user who placed the bid
@@ -38,21 +38,21 @@ const auctionSchema = new Schema<Auction>(
       required: true,
       min: 1, // Minimum auction duration should be 1 hour or greater
     },
-    productImages: {
-      type: [String],
-      required: true,
+    productImage: {
+      type: String,
+      required: false // Make 'productImage' a required field
     },
     registerBy: {
       type: Schema.Types.ObjectId,
       required: false,
-      ref: IDatabaseSchema.AUCTION_DATA,
+      ref: IDatabaseSchema.USER_DATA,
     },
     bids: [
       {
         bidder: {
           type: Schema.Types.ObjectId,
           required: false,
-          ref: IDatabaseSchema.AUCTION_DATA,
+          ref: IDatabaseSchema.USER_DATA,
         },
         bidAmount: {
           type: Number,
@@ -71,7 +71,7 @@ const auctionSchema = new Schema<Auction>(
 );
 
 export const AuctionModel = model<Auction>(
-  IDatabaseSchema.PRODUCT_DATA,
+  IDatabaseSchema.AUCTION_DATA,
   auctionSchema
   
 );
