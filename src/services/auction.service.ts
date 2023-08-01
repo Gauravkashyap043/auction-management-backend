@@ -1,15 +1,13 @@
 import { AuctionModel, Auction } from "../models/auctionModal";
 import { ObjectId } from "mongoose";
-export const createAuctionService = async (
-  params: Auction,
-  callBack: Function
-) => {
+
+
+export const createAuctionService = async (auction: Auction): Promise<Auction> => {
   try {
-    // Save the auction to the database
-    const createdAuction = await AuctionModel.create(params);
-    callBack(true, createdAuction);
+    const createdAuction = await AuctionModel.create(auction);
+    return createdAuction;
   } catch (error) {
-    callBack(false, error);
+    throw new Error("Failed to create auction");
   }
 };
 

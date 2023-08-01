@@ -3,75 +3,54 @@ import { AuctionModel, Auction } from "../models/auctionModal";
 import { verifyToken } from "../config/jwtConfig";
 import { createAuctionService, getAllAuctionsByRegister, getAllAuctionsService, placeBidService } from "../services/auction.service";
 // import { createAuctionService, placeBidService } from "../services/auctionService";
-import multer from "multer";
-
-const upload = multer({
-    dest: "uploads/", // Specify the destination folder to save the uploaded image
-    limits: {
-        fileSize: 1 * 1024 * 1024, // Limit the file size to 1 MB
-    },
-}).single("productImage");
 
 export const createAuction = async (req: Request, res: Response) => {
     try {
-        // Verify the token to check if the user is authenticated
         const token = await verifyToken(req.headers.authorization);
         if (!token) {
             return res.status(401).json({ error: "Unauthorized" });
         }
-
         // Extract data from the request body
         const {
             productName,
             details,
             startingBidPrice,
             auctionDuration,
+            registerBy,
         } = req.body;
 
         // Validate the data as per your requirements
-        if (
-            !productName ||
-            !details ||
-            startingBidPrice < 0 ||
-            auctionDuration < 1
-        ) {
-            return res.status(400).json({ error: "Invalid input data" });
-        }
+        // For example, check if all required fields are present and startingBidPrice is a positive number.
+        const auctionDurationInMinutes = parseInt(auctionDuration, 10);
+        const auctionEndTime = new Date();
+        auctionEndTime.setMinutes(auctionEndTime.getMinutes() + auctionDurationInMinutes);
+        const productImage = req.file ? req.file.path : undefined;
 
-        // Call the upload middleware to handle the image upload
-        upload(req, res, async (err: any) => {
-            if (err) {
-                return res.status(500).json({ error: "Failed to upload image" });
-            }
+        // Create the auction object
+        const auction: Auction = {
+            productName,
+            details,
+            startingBidPrice,
+            auctionDuration,
+            productImage,
+            auctionEndTime,
+            registerBy:token[0]._id,
+            bids: [], // Initialize with an empty array of bids
+        };
+        console.log("req.file:---------", req.file); // Check the uploaded file information
+        console.log("req.body:---------", req.body);
+        // Save the auction to the database
+        const createdAuction = await AuctionModel.create(auction);
 
-            // Get the file path of the uploaded image from multer
-            const productImage: string = req.file?.path || "";
 
-            // Create the auction object
-            const auction: Auction = {
-                productName,
-                details,
-                startingBidPrice,
-                auctionDuration,
-                productImage,
-                registerBy: token[0]._id, // Use the authenticated user's ID as the registerBy value
-                bids: [],
-            };
-
-            createAuctionService(auction, (success: boolean, data: any) => {
-                if (success) {
-                    return res.status(201).json(data);
-                } else {
-                    console.error("Error creating auction:", data);
-                    return res.status(500).json({ error: "Failed to create auction" });
-                }
-            });
-        });
+        // Respond with the created auction object
+        return res.status(201).json(createdAuction);
     } catch (error) {
         console.error("Error creating auction:", error);
         return res.status(500).json({ error: "Failed to create auction" });
     }
 };
+
 export const placeBid = async (req: Request, res: Response) => {
     try {
         const auctionId = req.params.id;
@@ -107,7 +86,16 @@ export const getAllAuctions = async (req: Request, res: Response) => {
     try {
         const allAuctions = await getAllAuctionsService();
 
-        return res.status(200).json(allAuctions);
+        // Modify the allAuctions array to include the image URL for each auction
+        const auctionsWithImageUrls = allAuctions.map((auction) => {
+            return {
+                // @ts-ignore
+                ...auction.toObject(),
+                productImage: `/uploads/${auction.productImage}`, // Include the correct URL
+            };
+        });
+
+        return res.status(200).json(auctionsWithImageUrls);
     } catch (error) {
         console.error("Error fetching all auctions:", error);
         return res.status(500).json({ error: "Failed to fetch all auctions" });
@@ -127,6 +115,8 @@ export const getSingleAuction = async (req: Request, res: Response) => {
             return res.status(404).json({ error: "Auction not found" });
         }
 
+        auction.productImage = `/uploads/${auction.productImage}`;
+
         return res.status(200).json(auction);
     } catch (error) {
         console.error("Error fetching single auction:", error);
@@ -136,13 +126,13 @@ export const getSingleAuction = async (req: Request, res: Response) => {
 
 export const getAllAuctionsByRegisterId = async (req: Request, res: Response) => {
     try {
-      const registerById = req.params.registerId; // Assuming the registerBy ID is passed in the request parameters
-  
-      const allAuctions = await getAllAuctionsByRegister(registerById);
-  
-      return res.status(200).json(allAuctions);
+        const registerById = req.params.registerId; // Assuming the registerBy ID is passed in the request parameters
+
+        const allAuctions = await getAllAuctionsByRegister(registerById);
+
+        return res.status(200).json(allAuctions);
     } catch (error) {
-      console.error("Error fetching auctions by registerBy:", error);
-      return res.status(500).json({ error: "Failed to fetch auctions by registerBy" });
+        console.error("Error fetching auctions by registerBy:", error);
+        return res.status(500).json({ error: "Failed to fetch auctions by registerBy" });
     }
-  };
+};
