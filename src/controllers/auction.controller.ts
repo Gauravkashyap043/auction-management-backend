@@ -2,8 +2,9 @@ import { Request, Response } from "express";
 import { AuctionModel, Auction } from "../models/auctionModal";
 import { verifyToken } from "../config/jwtConfig";
 import { createAuctionService, getAllAuctionsByRegister, getAllAuctionsService, placeBidService } from "../services/auction.service";
-// import { createAuctionService, placeBidService } from "../services/auctionService";
 
+
+import { Types } from "mongoose";
 export const createAuction = async (req: Request, res: Response) => {
   try {
     const token = await verifyToken(req.headers.authorization);
@@ -122,6 +123,11 @@ export const getSingleAuction = async (req: Request, res: Response) => {
   try {
     const auctionId = req.params.auctionId; // Assuming the auction ID is passed in the request parameters
 
+    // Check if the auctionId is a valid ObjectId
+    if (!Types.ObjectId.isValid(auctionId)) {
+      return res.status(400).json({ error: "Invalid auctionId" });
+    }
+
     // Find the auction by ID
     const auction = await AuctionModel.findById(auctionId)
       .populate("registerBy", "-password") // Populate the registerBy field and exclude the password field
@@ -140,6 +146,7 @@ export const getSingleAuction = async (req: Request, res: Response) => {
     return res.status(500).json({ error: "Failed to fetch the auction" });
   }
 };
+
 
 export const getAllAuctionsByRegisterId = async (req: Request, res: Response) => {
   try {
