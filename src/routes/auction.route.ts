@@ -19,7 +19,7 @@ const storage = multer.diskStorage({
 auctionRouter.post("/create-auction", upload.single("productImage"), createAuction);
 
 // Place bid
-auctionRouter.post("/auction/:id/place-bid", placeBid);
+auctionRouter.post("/auction/place-bid/:id", placeBid);
 
 // Get all auctions data
 auctionRouter.get("/auctions", getAllAuctions);

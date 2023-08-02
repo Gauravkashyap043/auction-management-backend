@@ -1,7 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
-import { dbConnectionMiddleware } from "./config/dbConnection";
-import router from "./routes";
+import { dbConnectionMiddleware } from "./src/config/dbConnection";
+import router from "./src/routes";
 import multer from "multer";
 import path from "path";
 const cors = require("cors");
@@ -14,7 +14,7 @@ app.use(dbConnectionMiddleware);
 app.use(router);
 app.use(express.json());
 
-app.use("/", express.static(path.join(__dirname, "../uploads")));
+app.use("/", express.static(path.join(__dirname, "uploads/")));
 
 app.listen(process.env.BACK_PORT, () => {
   console.log(

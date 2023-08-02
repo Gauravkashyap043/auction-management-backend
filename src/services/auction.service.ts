@@ -5,6 +5,12 @@ import { ObjectId } from "mongoose";
 export const createAuctionService = async (auction: Auction): Promise<Auction> => {
   try {
     const createdAuction = await AuctionModel.create(auction);
+
+    // Modify the productImage URL to remove 'upload//'
+    if (createdAuction.productImage) {
+      createdAuction.productImage = createdAuction.productImage.replace("upload/", "");
+    }
+
     return createdAuction;
   } catch (error) {
     throw new Error("Failed to create auction");
@@ -67,9 +73,9 @@ export const placeBidService = async (
 export const getAllAuctionsService = async (): Promise<Auction[]> => {
   try {
     const allAuctions = await AuctionModel.find()
-    .populate("registerBy", "-password") // Populate the registerBy field and exclude the password field
-    .populate("bids.bidder", "-password") // Populate the bidder field in the bids array and exclude the password field
-    .exec();
+      .populate("registerBy", "-password") // Populate the registerBy field and exclude the password field
+      .populate("bids.bidder", "-password") // Populate the bidder field in the bids array and exclude the password field
+      .exec();
 
     return allAuctions;
   } catch (error) {

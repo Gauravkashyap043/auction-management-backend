@@ -13,7 +13,7 @@ authRouter.post(
 
 authRouter.post(
   "/login",
-  RequestValidation.validateFunction(requestValidationConfig.userLogin),
+  RequestValidation.validateFunction(requestValidationConfig.userLogin),  
   userLogin
 );
 

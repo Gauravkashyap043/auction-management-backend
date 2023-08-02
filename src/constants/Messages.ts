@@ -6,5 +6,6 @@ export const Messages = {
   USER_UNAUTHORIZED: "User unauthorized.",
   INTERNAL_SERVER_ERROR: "Internal Server Error. Kindly contact admin.",
   FAILED: "Failed",
-  USER_EXIST: "User already exist"
+  USER_EXIST: "User already exist",
+  INVALID_CREDENTIALS:"Invalid Credential"
 };
