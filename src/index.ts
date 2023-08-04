@@ -1,7 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
-import { dbConnectionMiddleware } from "./src/config/dbConnection";
-import router from "./src/routes";
+import { dbConnectionMiddleware } from "./config/dbConnection";
+import router from "./routes";
 import multer from "multer";
 import path from "path";
 const cors = require("cors");
